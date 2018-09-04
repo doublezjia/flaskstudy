@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky{% endblock %}
+
+{% block page_content %}
+
+{% if status ==1 %}
+<h1>{{label}}</h1>
+{{ wtf.quick_form(form) }}
+
+{%else%}
+<h1>Congratulations</h1>
+<p>Modify email address successfully.</p>
+{%endif%}
+
+{% endblock %}

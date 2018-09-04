@@ -1,0 +1,11 @@
+Dear {{user.username}}
+    <pre>
+    Congratulations on your successful registration.
+    please <a href="{{ url_for('auth.confirm',token=token,_external=True) }}">click here</a> to confirm your account.
+
+    if can not click the link ,please copy this URL to the browser
+
+    {{ url_for('auth.confirm',token=token,_external=True) }}
+
+    </pre>
+
