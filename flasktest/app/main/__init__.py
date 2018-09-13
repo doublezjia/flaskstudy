@@ -15,3 +15,9 @@ main = Blueprint('main',__name__)
 # views.py errors.py都在这个目录下，导入视图等模块，与蓝本关联起来
 # 注意的是这些views.py模块要在最后导入，因为模块中会用到蓝本main，在最后导入可以避免出错
 from . import views,errors
+from ..models import Permission
+
+# 为了让Permission可以全局方法，所以添加一个方法
+@main.app_context_processor
+def inject_permissions():
+    return dict(Permission=Permission)

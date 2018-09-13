@@ -24,6 +24,8 @@ from .forms import ResetPassowrdRequeitForm
 from .forms import ResetPassowrdForm
 from .forms import ChangeEmailForm
 
+
+
 # 登录页面
 @auth.route('/login',methods = ['GET','POST']) 
 def login():

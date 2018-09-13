@@ -24,6 +24,10 @@ class Config():
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     MAIL_SUBJECT = 'Congratulations on your successful registration.'
     MAIL_SENDER = 'abc@qq.com'
+
+    FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
+
+
     #此注释可表明使用类名可以直接调用该方法
     @staticmethod 
     # 执行当前需要的环境的初始化
