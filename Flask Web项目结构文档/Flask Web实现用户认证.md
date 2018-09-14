@@ -1,5 +1,7 @@
 # 用户认证
 
+> 这里使用的是Flask Web项目结构的方式
+
 ## 使用Werkzeug的security实现密码散列
 
 
