@@ -107,7 +107,7 @@ class Role(db.Model):
     def has_permission(self, perm):
         # 这里self.permissions默认为0
         # 这里用到位运算符&
-        # & 按位与运算符：参与运算的两个值,如果两个相应位都为1,则该位的结果为1,否则为0
+        # & 位与运算符：参与运算的两个值,如果两个相应位都为1,则该位的结果为1,否则为0
         # self.permissions & perm的值等于perm则为True
         return self.permissions & perm == perm
 
