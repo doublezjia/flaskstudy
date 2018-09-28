@@ -26,10 +26,24 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}
-                <li><p class="navbar-text">Hello {{current_user.username}}</p> </li>
-                <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
-                <li><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
-                <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                <!-- 下拉菜单dropdown -->
+                <li class=dropdown>
+                    <a href="#" class="dropdown-toggle" data-toggle='dropdown'>{{current_user.username}}
+                    <!-- caret向下小三角 -->
+                    <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu" >
+                        <li ><a href="{{ url_for('main.user',username=current_user.username) }}">Profile</a></li>
+                        {% if current_user.is_administrator() %}
+                            <li><a href="{{url_for('main.userlist')}}">Userlist</a></li>
+                        {% endif %}
+                        <li ><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
+                        <li ><a href="{{ url_for('auth.change_email_request') }}">Change Email</a></li>
+                        <!-- divider 分割线 -->
+                        <li class="divider" ></li>
+                        <li ><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                    </ul>
+                </li>
                 {% else %}
                 <li><a href="{{ url_for('auth.register') }}">Register</a></li>
                 <li><a href="{{ url_for('auth.login') }}">Log In</a></li>

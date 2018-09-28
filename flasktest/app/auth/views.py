@@ -61,7 +61,7 @@ def register():
     if form.validate_on_submit():
         user = User(username=form.username.data,email=form.email.data,
             password=form.password.data,
-            datetime=datetime.now())
+            member_since=datetime.now())
         db.session.add(user)
         db.session.commit()
         # 生成token,然后把token通过send_mail生成链接发送到用户邮箱
@@ -100,11 +100,13 @@ def before_request():
     # 2. 没有认证的用户
     # 3.请求的端点不在认证认证蓝本中
     # 4.不是访问静态文件
-    if current_user.is_authenticated \
-    and not current_user.confirmed \
-    and request.blueprint != 'auth' \
-    and request.endpoint != 'static':
-        return redirect(url_for('auth.unconfirmed'))
+    if current_user.is_authenticated:
+        # 刷新用户最后访问时间
+        current_user.ping()
+        if not current_user.confirmed \
+        and request.blueprint != 'auth' \
+        and request.endpoint != 'static':
+            return redirect(url_for('auth.unconfirmed'))
 
 # 没有认证的跳转到这个页面进行发邮件认证
 @auth.route('/unconfirmed')

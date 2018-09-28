@@ -12,6 +12,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask import current_app
+from datetime import datetime
 
 # 权限类，数字为对应权限的位值,类中是以十进制表示
 class Permission:
@@ -127,9 +128,14 @@ class User(UserMixin,db.Model):
     # 邮箱
     email = db.Column(db.String(255), unique=True, index=True)
     # 录入时间
-    datetime = db.Column(db.DateTime())
+    # 因为db.Column()的default参数可以接受函数座位默认值，所以这里的datetime.utcnow可以不用加()
+    member_since = db.Column(db.DateTime(),default=datetime.utcnow)
     # 是否认证用户，默认为Flase
     confirmed = db.Column(db.Boolean(),default=False)
+    # 关于
+    about_me = db.Column(db.Text())
+    # 最后访问时间
+    last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
 
 
     def __init__(self, **kwargs):
@@ -224,6 +230,11 @@ class User(UserMixin,db.Model):
         self.email = new_email
         db.session.add(self)
         return True
+
+    # 刷新用户最后访问时间
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
     # 检查用户是否有权限操作，如果有权限则返回True
     def can(self, perm):

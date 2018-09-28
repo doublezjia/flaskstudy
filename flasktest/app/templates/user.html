@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Flasky - User{% endblock %}
+
+{% block page_content %}
+<div class="page-content">
+    <h1>{{user.username}}</h1>
+    {% if current_user.is_administrator() %}
+    <p><a href="#">{{user.email}}</a></p>
+    {% endif %}
+    {% if user.about_me %}
+    <p>{{user.about_me}}</p>
+    {% endif %}
+    <p>Member since: {{moment(user.member_since).format('L')}}.</p>
+    <p>Last seen: {{moment(user.last_seen).format('L')}}.</p>
+    {% if user == current_user %}
+    <a class="btn btn-default" href='{{url_for("main.edit_profile")}}'>
+        Edit Profile
+    </a>
+    {% endif %}
+
+    {% if current_user.is_administrator() %}
+    <a class="btn btn-danger" href='{{url_for("main.edit_profile_admin",id=user.id)}}'>
+        Edit Profile[Admin]
+    </a>
+    {% endif %}   
+</div>
+{% endblock %}

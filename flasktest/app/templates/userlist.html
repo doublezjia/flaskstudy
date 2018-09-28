@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Flasky - User{% endblock %}
+
+{% block page_content %}
+
+<table class="table table-bordered table-hover">
+    <tr>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Confirmed</th>
+        <th>Role</th>
+        <th>Member since</th>
+        <th>Last seen</th>
+        <th>operation</th>
+    </tr>
+    {% for user in userlist %}
+    <tr>
+        <td>{{user.username}}</td>
+        <td>{{user.email}}</td>
+        <td>{{user.confirmed}}</td>
+        <td>{{user.role_id}}</td>
+        <td>{{user.member_since}}</td>
+        <td>{{user.last_seen}}</td>
+        <td><a class="btn btn-primary" href="{{url_for('main.edit_profile_admin',id=user.id)}}" role="button">Edit</a></td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}
