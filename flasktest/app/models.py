@@ -14,6 +14,9 @@ from . import db
 from flask import current_app
 from datetime import datetime
 
+import hashlib
+from flask import request
+
 # 权限类，数字为对应权限的位值,类中是以十进制表示
 class Permission:
     # 关注用户
@@ -134,6 +137,8 @@ class User(UserMixin,db.Model):
     confirmed = db.Column(db.Boolean(),default=False)
     # 关于
     about_me = db.Column(db.Text())
+    # 用来缓存头像MD5
+    avatar_hash = db.Column(db.String(255))
     # 最后访问时间
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
 
@@ -151,6 +156,10 @@ class User(UserMixin,db.Model):
             # 经过上一步之后再判断role是否为空，如果空的就把default设置为True，作为普通用户
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        # 在邮件存在的情况下，如果头像的缓存没有的，则先生成MD5
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+
 
     # 加密密码
     # @property 把password方法变为User的属性，只读
@@ -228,6 +237,7 @@ class User(UserMixin,db.Model):
         if self.query.filter_by(email=new_email).first() is not None:
             return False
         self.email = new_email
+        self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
         db.session.add(self)
         return True
 
@@ -235,6 +245,23 @@ class User(UserMixin,db.Model):
     def ping(self):
         self.last_seen = datetime.utcnow()
         db.session.add(self)
+
+    # 通过邮箱在www.gravatar.com注册上传头像，然后调用头像地址
+    # www.gravatar.com的头像地址是是通过邮箱的MD5加密获取
+    # www.gravatar.com中如果没有注册头像的是默认头像
+    def gravatar(self,size=100,default='identicon',rating='g'):
+        # 判断是否使用安全通道，如HTTPS
+        if request.is_secure:
+            url = 'https://secure.gravatar.com/avatar'
+        else:
+            url = 'http://www.gravatar.com/avatar'
+        
+        hash =self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
+
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url,
+            hash=hash,size=size,default=default,rating=rating)
+
+
 
     # 检查用户是否有权限操作，如果有权限则返回True
     def can(self, perm):

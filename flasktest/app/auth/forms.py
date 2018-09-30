@@ -22,7 +22,8 @@ class LoginForm(FlaskForm):
 
 # 注册表单
 class RegisterForm(FlaskForm):
-    username = StringField('UserName:',validators=[Required()])
+    username = StringField('UserName:',validators=[Required(),
+        Regexp('^[\u4e00-\u9fa5_a-zA-Z0-9]*$',0,'用户名只能为英文数字中文')])
     password = PasswordField('PassWord:',validators=[Required()])
     # 通过EqualTo实现判断密码是否相同
     repassword = PasswordField('Confrm PassWord:',validators=[Required(),
