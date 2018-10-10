@@ -55,9 +55,15 @@ class EditProfileAdminForm(FlaskForm):
         if field.data != self.user.username and User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
 
+# 上传文件
 class FileUploadsForm(FlaskForm):
     fileUpload = FileField(u'图片上传', 
         validators=[FileAllowed(['jpg','gif','png','jpeg','bmp'], u'只能上传图片！'),
         FileRequired(u'文件未选择！')])
     submit = SubmitField('Submit')
         
+
+# 富文本编辑器
+class CkeditorForm(FlaskForm):
+    body = TextAreaField()
+    submit = SubmitField('Submit')

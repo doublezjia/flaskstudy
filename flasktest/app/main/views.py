@@ -26,6 +26,7 @@ from ..decorators import admin_required
 from flask import request
 from .. import photos 
 from .forms import FileUploadsForm
+from .forms import CkeditorForm
 
 import json,hashlib,time
 # 管理员页面
@@ -149,3 +150,11 @@ def upload_file():
         flash(file_path)
         return redirect(url_for('main.upload_file'))
     return render_template('uploads.html',form=form,filename=session.get('filename'))
+
+@main.route('/ckeditortest',methods=['GET','POST'])
+def ckeditor_test():
+    form = CkeditorForm()
+    if form.validate_on_submit():
+        body = form.body.data
+        return redirect(url_for('main.ckeditor_test',body=body))
+    return render_template('ckeditor_test.html',form=form)

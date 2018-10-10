@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}Flasky - Ckeditor Test{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>Ckeditor Test</h1>
+</div>
+<div class="col-md-4">
+<form method="POST" action="{{url_for('main.ckeditor_test')}}">
+    {{form.hidden_tag()}}
+    <div>{{form.body(cols=50,rows=20,class='ckeditor')}}</div>
+    <div>{{form.submit()}}</div>
+</form>
+
+</div>
+{% endblock %}
