@@ -23,6 +23,10 @@ from ..models import Permission
 from ..decorators import permission_required
 from ..decorators import admin_required
 
+from flask import request
+from .. import photos 
+from .forms import FileUploadsForm
+
 import json
 # 管理员页面
 @main.route('/admin')
@@ -124,3 +128,18 @@ def userlist():
     # 查询所有数据
     userlist = User.query.order_by(User.id).all()
     return render_template('userlist.html',userlist=userlist)
+
+
+# 图片上传
+@main.route('/upload', methods=['GET', 'POST'])
+def upload_file():
+    form = FileUploadsForm()
+    if form.validate_on_submit():
+    # if request.method == 'POST' and 'photo' in request.files:
+        filename = photos.save(form.fileUpload.data)
+        file_url = photos.url(filename)
+        flash('Upload file successful.')
+        return redirect(url_for('main.upload_file'))
+    else:
+        flash('error')
+    return render_template('uploads.html',form=form)

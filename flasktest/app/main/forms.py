@@ -12,6 +12,9 @@ from wtforms.validators import Required,Email,Length,Regexp
 from wtforms import ValidationError
 from ..models import Role,User
 
+
+from flask_wtf.file import FileField, FileRequired, FileAllowed
+
 class Nameform(FlaskForm):
     user = StringField('name',validators=[Required()])
     email = StringField('Email',validators=[Required(),Email()])
@@ -51,3 +54,10 @@ class EditProfileAdminForm(FlaskForm):
     def validate_username(self,field):
         if field.data != self.user.username and User.query.filter_by(username=field.data).first():
             raise ValidationError('Username already in use.')
+
+class FileUploadsForm(FlaskForm):
+    fileUpload = FileField(u'图片上传', 
+        validators=[FileAllowed(['jpg','gif','png','jpeg','bmp'], u'只能上传图片！'),
+        FileRequired(u'文件未选择！')])
+    submit = SubmitField('Submit')
+        

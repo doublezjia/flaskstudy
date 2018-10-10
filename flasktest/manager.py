@@ -14,12 +14,14 @@ from app.models import Role,User,Permission
 from flask_script import Manager,Shell
 from flask_migrate import Migrate,MigrateCommand
 
+
 app = create_app('default')
 
 
 manager = Manager(app)
 
 migrate = Migrate(app,db)
+
 
 #集成python shell
 #为Python shell 添加一个上下文，这样就可以不用每次运行shell都要导入这些包
