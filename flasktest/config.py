@@ -30,7 +30,7 @@ class Config():
     # Flask-uploads中的配置
     # 如果UploadSet设置的名称为photos，则这里要写成UPLOADED_PHOTOS_DEST
     # 参考：https://zhuanlan.zhihu.com/p/24418074?refer=flask
-    UPLOADED_PHOTOS_DEST = 'Uploads'
+    UPLOADED_PHOTOS_DEST = 'app/static/Uploads'
 
 
     #此注释可表明使用类名可以直接调用该方法

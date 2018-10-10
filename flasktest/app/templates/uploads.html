@@ -8,5 +8,11 @@
 </div>
 <div class="col-md-4">
 {{ wtf.quick_form(form) }}
+
+{% if filename %}
+    <img src="{{url_for('static',filename='Uploads/'+filename)}}" class="img-thumbnail ">
+{% endif %}
+
+
 </div>
 {% endblock %}

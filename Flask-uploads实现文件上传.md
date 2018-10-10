@@ -116,4 +116,34 @@ if __name__ == '__main__':
 ```
 
 
+上传的文件名处理
+
+如果有大量的文件要处理，可以使用时间戳的md5值作为文件名，使用用户名的md5值作为文件夹（长度适当选择）
+
+```
+import time
+import hashlib
+
+name = hashlib.md5(str(time.time())).hexdigest()[:15]
+filename = photos.save(form.photo.data, name=name+'.')
+```
+
+>对Python3来说，md5()中的字符串需要先进行编码：
+(str(time.time())).encode('UTF-8')
+
+如果选择的文件名为全中文会返回空白就会出错，所以这里需要修改一处源码flask_uploads.py第80行位置的函数。
+
+修改为如下
+```
+def extension(filename):
+    ext = os.path.splitext(filename)[1]
+    if ext == '':
+        ext = os.path.splitext(filename)[0]
+    if ext.startswith('.'):
+        # os.path.splitext retains . separator
+        ext = ext[1:]
+    return ext
+```
+
+
 更多Flask-Uploads使用方法可以参考前面的两个网站。

@@ -27,7 +27,7 @@ from flask import request
 from .. import photos 
 from .forms import FileUploadsForm
 
-import json
+import json,hashlib,time
 # 管理员页面
 @main.route('/admin')
 @login_required
@@ -135,11 +135,10 @@ def userlist():
 def upload_file():
     form = FileUploadsForm()
     if form.validate_on_submit():
-    # if request.method == 'POST' and 'photo' in request.files:
-        filename = photos.save(form.fileUpload.data)
+        Fname = hashlib.md5(str(time.time()).encode('utf-8')).hexdigest()
+        filename = photos.save(form.fileUpload.data,name=Fname+'.')
         file_url = photos.url(filename)
+        session['filename'] = filename
         flash('Upload file successful.')
         return redirect(url_for('main.upload_file'))
-    else:
-        flash('error')
-    return render_template('uploads.html',form=form)
+    return render_template('uploads.html',form=form,filename=session.get('filename'))
