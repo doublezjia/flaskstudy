@@ -9,9 +9,10 @@
 <div class="col-md-12">
 <form method="POST" action="{{url_for('main.ckeditor_test')}}">
     {{form.hidden_tag()}}
-    <div>{{form.body(cols=50,rows=20,class='ckeditor')}}</div>
+    <div>{{form.content()}}</div>
     <div>{{form.submit()}}</div>
 </form>
+
 
 </div>
 {% endblock %}

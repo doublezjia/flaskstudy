@@ -290,3 +290,9 @@ login_manager.anonymous_user = AnonymousUser
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
+
+class Content(db.Model):
+    __tablename__ = 'content'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text())

@@ -6,7 +6,15 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-<script src="//cdn.ckeditor.com/4.5.11/standard-all/ckeditor.js"></script>
+
+<!-- <script src="//cdn.ckeditor.com/4.5.11/full/ckeditor.js"></script> -->
+
+<!-- <script src="//cdn.tinymce.com/4/tinymce.min.js"></script> -->
+<script src="{{ url_for('static',filename='tinymce/tinymce.min.js') }}"></script>
+<!-- <script src="{{ url_for('static',filename='tinymce/jquery.tinymce.min.js') }}"></script> -->
+<!-- <script src="{{ url_for('static',filename='tinymce/jquery.form.js') }}"></script> -->
+<script src="{{ url_for('static',filename='tinymce/tinymce_setup.js') }}"></script>
+<!-- <script>tinymce.init({ selector:'textarea' });</script> -->
 {% endblock %}
 
 {% block navbar %}
@@ -25,6 +33,7 @@
             <ul class="nav navbar-nav">
                 <li><a href="{{ url_for('main.index') }}">Home</a></li>
                 <li><a href="{{ url_for('main.upload_file') }}">Upload</a></li>
+                <li><a href="{{ url_for('main.ckeditor_test') }}">Ckeditor Test</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% if current_user.is_authenticated %}

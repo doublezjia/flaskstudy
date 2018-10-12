@@ -6,13 +6,13 @@
 # @Version : $Id$
 # @@Desc   : 网站视图
 
-from flask import render_template,session,url_for,session,flash,redirect
+from flask import render_template,session,url_for,session,flash,redirect,request,Response
 
 from . import main
 from .forms import Nameform
 from .forms import EditProfileForm
 from .forms import EditProfileAdminForm
-from ..models import User,Role
+from ..models import User,Role,Content
 from .. import db
 
 from flask_login import login_required
@@ -23,12 +23,11 @@ from ..models import Permission
 from ..decorators import permission_required
 from ..decorators import admin_required
 
-from flask import request
 from .. import photos 
 from .forms import FileUploadsForm
 from .forms import CkeditorForm
 
-import json,hashlib,time
+import json,hashlib,time,os
 # 管理员页面
 @main.route('/admin')
 @login_required
@@ -64,7 +63,7 @@ def index():
             #     flash('passowrd is wrong')
         # 重定向到页面,这里要注意要用main.index或者.index
         return redirect(url_for('.index'))
-    return render_template('index.html',user=session.get('user'),form = form)
+    return render_template('index.html',user=session.get('user'))
 
 # 用户页面
 @main.route('/user/<username>')
@@ -144,17 +143,45 @@ def upload_file():
         file_url = photos.url(filename)
         # 获取保存的完整路径
         file_path = photos.path(filename)
-        session['filename'] = filename
         flash('Upload file successful.')
         flash(file_url)
         flash(file_path)
         return redirect(url_for('main.upload_file'))
-    return render_template('uploads.html',form=form,filename=session.get('filename'))
+    return render_template('uploads.html',form=form)
 
+
+# 富文本编辑器tinymce测试页面
 @main.route('/ckeditortest',methods=['GET','POST'])
 def ckeditor_test():
     form = CkeditorForm()
     if form.validate_on_submit():
-        body = form.body.data
-        return redirect(url_for('main.ckeditor_test',body=body))
+        content = Content(content=form.content.data)
+        db.session.add(content)
+        db.session.commit()
+        return redirect(url_for('main.ckeditor_show'))
     return render_template('ckeditor_test.html',form=form)
+
+# 富文本编辑器测试显示页面
+@main.route('/ckeditorshow/')
+def ckeditor_show():
+    content = Content.query.all()
+    return render_template('ckeditor_show.html',content = content)
+
+# 用来处理富文本上传图片
+@main.route('/tinymceupload',methods=['POST','OPTIONS'])
+def tinymceUpload():
+    # 如果提交的方式为POST就执行
+    if request.method == 'POST':
+        # 生成文件名
+        Fname = hashlib.md5(str(time.time()).encode('utf-8')).hexdigest()
+        # 通过flask-upload来保存文件，这里获取富文本编辑器中方的文件上传的值为request.files['file']
+        img  = photos.save(request.files['file'],name=Fname+'.')
+        # 因为保存的文件默认为'/static/uploads/'，所以生成如下路径
+        imgsrc = '/static/uploads/'+img
+        # 因为tinymce需要返回的值为json，所以新建一个key为location的字典
+        # 然后转为json格式在再返回
+        imgdict = {
+        'location':imgsrc
+        }
+        img_json = json.dumps(imgdict)
+        return img_json

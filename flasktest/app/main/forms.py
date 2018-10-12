@@ -65,5 +65,5 @@ class FileUploadsForm(FlaskForm):
 
 # 富文本编辑器
 class CkeditorForm(FlaskForm):
-    body = TextAreaField()
+    content = TextAreaField()
     submit = SubmitField('Submit')
