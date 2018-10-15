@@ -10,7 +10,7 @@ import os
 
 # 导入包
 from app import create_app,db 
-from app.models import Role,User,Permission
+from app.models import Role,User,Permission,Article
 from flask_script import Manager,Shell
 from flask_migrate import Migrate,MigrateCommand
 
@@ -26,7 +26,7 @@ migrate = Migrate(app,db)
 #集成python shell
 #为Python shell 添加一个上下文，这样就可以不用每次运行shell都要导入这些包
 def make_shell_context():
-    return dict(app=app,db=db,User=User,Role=Role,Permission=Permission)
+    return dict(app=app,db=db,User=User,Role=Role,Article=Article,Permission=Permission)
 manager.add_command("shell", Shell(make_context=make_shell_context))
 
 #迁移仓库相关，附加db命令到Flask-Script的manager对象上

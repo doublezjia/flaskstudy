@@ -141,6 +141,8 @@ class User(UserMixin,db.Model):
     avatar_hash = db.Column(db.String(255))
     # 最后访问时间
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
+    # db.relationship与Article建立反向关系,backref='author'的值为自定义
+    article = db.relationship('Article',backref='author',lazy='dynamic')
 
 
     def __init__(self, **kwargs):
@@ -292,7 +294,9 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-class Content(db.Model):
-    __tablename__ = 'content'
+class Article(db.Model):
+    __tablename__ = 'article'
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text())
+    content = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
+    author_id = db.Column(db.Integer,db.ForeignKey('users.id'))

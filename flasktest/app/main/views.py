@@ -12,7 +12,7 @@ from . import main
 from .forms import Nameform
 from .forms import EditProfileForm
 from .forms import EditProfileAdminForm
-from ..models import User,Role,Content
+from ..models import User,Role,Article
 from .. import db
 
 from flask_login import login_required
@@ -155,7 +155,7 @@ def upload_file():
 def ckeditor_test():
     form = CkeditorForm()
     if form.validate_on_submit():
-        content = Content(content=form.content.data)
+        content = Article(content=form.content.data)
         db.session.add(content)
         db.session.commit()
         return redirect(url_for('main.ckeditor_show'))
@@ -164,7 +164,7 @@ def ckeditor_test():
 # 富文本编辑器测试显示页面
 @main.route('/ckeditorshow/')
 def ckeditor_show():
-    content = Content.query.all()
+    content = Article.query.all()
     return render_template('ckeditor_show.html',content = content)
 
 # 用来处理富文本上传图片
