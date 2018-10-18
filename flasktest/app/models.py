@@ -144,6 +144,9 @@ class User(UserMixin,db.Model):
     # db.relationship与Article建立反向关系,backref='author'的值为自定义
     article = db.relationship('Article',backref='author',lazy='dynamic')
 
+    # 本地上传图片
+    imagesrc = db.Column(db.String(255))
+
 
     def __init__(self, **kwargs):
         # 继承父类

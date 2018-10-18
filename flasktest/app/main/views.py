@@ -132,21 +132,18 @@ def userlist():
 
 # 图片上传
 @main.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload_file():
     form = FileUploadsForm()
     if form.validate_on_submit():
-        # 生成文件名
-        Fname = hashlib.md5(str(time.time()).encode('utf-8')).hexdigest()
-        # 保存文件
-        filename = photos.save(form.fileUpload.data,name=Fname+'.')
-        # 获取文件的url
-        file_url = photos.url(filename)
-        # 获取保存的完整路径
-        file_path = photos.path(filename)
-        flash('Upload file successful.')
-        flash(file_url)
-        flash(file_path)
-        return redirect(url_for('main.upload_file'))
+        if session.get('imgsrc'):
+            imgsrc = session.get('imgsrc')
+            current_user.imagesrc = imgsrc
+            db.session.add(current_user)
+            db.session.commit()
+            flash('Add image successful.')
+            session['imgsrc'] = ''
+            return redirect(url_for('main.upload_file'))
     return render_template('uploads.html',form=form)
 
 
@@ -184,4 +181,5 @@ def tinymceUpload():
         'location':imgsrc
         }
         img_json = json.dumps(imgdict)
+        session['imgsrc'] = imgsrc
         return img_json

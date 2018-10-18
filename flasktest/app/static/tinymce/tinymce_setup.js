@@ -30,6 +30,8 @@ tinymce.init({
             relative_urls: false,
             //不允许拖动大小
             resize: false,
+            // 开启异步上传
+            automatic_uploads: true,
 
             images_upload_handler: function (blobInfo, success, failure) {
               var xhr, formData;

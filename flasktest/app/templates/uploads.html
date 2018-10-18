@@ -7,12 +7,39 @@
     <h1>Upload File</h1>
 </div>
 <div class="col-md-4">
-{{ wtf.quick_form(form) }}
+<form class="form" method="POST" enctype="multipart/form-data">
+    {{form.hidden_tag()}}
+    {{ wtf.form_field(form.fileUpload,onchange="UploadAndShow()") }}
+    {{ wtf.form_field(form.submit) }}
+</form>
 
-{% if filename %}
-    <img src="{{url_for('static',filename='Uploads/'+filename)}}" class="img-thumbnail ">
-{% endif %}
 
+<!-- <img id="uploadimg" src="" class="img-thumbnail"> -->
+<div id='showimg'></div>
+
+<script type="text/javascript">
+    function UploadAndShow(){
+        var xmlhttp,formData;
+        var file;
+        xmlhttp = new XMLHttpRequest();
+        xmlhttp.open('POST','/tinymceupload',true)
+        xmlhttp.onload = function(){
+            var json
+            if ( xmlhttp.status == 200){
+                // 把responseText转为json
+                json =JSON.parse(xmlhttp.responseText);
+                // document.getElementById('uploadimg').src = json.location;
+                document.getElementById('showimg').innerHTML = '<img id="uploadimg" src="'+ json.location +'" class="img-thumbnail">'
+            }
+        }
+        formData = new FormData();
+        // fileUpload.files[0]获取上传文件控件的值
+        formData.append('file', fileUpload.files[0]);
+
+        xmlhttp.send(formData);   
+           
+    }
+</script>
 
 </div>
 {% endblock %}

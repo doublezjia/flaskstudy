@@ -12,6 +12,12 @@
     {% if user.about_me %}
     <p>{{user.about_me}}</p>
     {% endif %}
+
+    {% if user.imagesrc %}
+    <p><img src="{{user.imagesrc}}" class="img-thumbnail"></p>
+    {% endif %}
+
+
     <p>Member since: {{moment(user.member_since).format('L')}}.</p>
     <p>Last seen: {{moment(user.last_seen).format('L')}}.</p>
     {% if user == current_user %}

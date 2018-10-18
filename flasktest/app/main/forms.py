@@ -59,7 +59,7 @@ class EditProfileAdminForm(FlaskForm):
 class FileUploadsForm(FlaskForm):
     fileUpload = FileField(u'图片上传', 
         validators=[FileAllowed(['jpg','gif','png','jpeg','bmp'], u'只能上传图片！'),
-        FileRequired(u'文件未选择！')])
+        FileRequired(u'图片未选择！')])
     submit = SubmitField('Submit')
         
 
