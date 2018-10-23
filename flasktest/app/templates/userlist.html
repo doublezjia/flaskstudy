@@ -19,9 +19,13 @@
         <td>{{user.username}}</td>
         <td>{{user.email}}</td>
         {% if user.confirmed %}
-            <td><img src="{{ url_for('static', filename='images/True.png') }}" width="15" height="15"></td>
+<!--             <td><img src="{{ url_for('static', filename='images/True.png') }}" width="15" height="15"></td> -->
+            <!-- 矢量图标 -->
+            <td><i class="iconfont icon-dui">&#xe635;</i></td>
         {% else %}
-            <td><img src="{{ url_for('static', filename='images/False.png') }}" width="15" height="15"></td>
+            <!-- <td><img src="{{ url_for('static', filename='images/False.png') }}" width="15" height="15"></td> -->
+            <!-- 矢量图标 -->
+            <td><i class="iconfont icon-cuo">&#xe601;</i></td>
         {% endif %}
         <td>{{user.role.name}}</td>
         <td>{{user.member_since}}</td>
