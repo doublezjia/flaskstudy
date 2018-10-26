@@ -300,6 +300,7 @@ def load_user(user_id):
 class Article(db.Model):
     __tablename__ = 'article'
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255))
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
     author_id = db.Column(db.Integer,db.ForeignKey('users.id'))

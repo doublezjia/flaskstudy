@@ -9,8 +9,11 @@
 <div class="col-md-12">
 <form method="POST" action="{{url_for('main.ckeditor_test')}}">
     {{form.hidden_tag()}}
+    <div>{{form.title.label}}</div>
+    <div>{{form.title(class='form-control')}}</div>
+    <div>{{form.content.label}}</div>
     <div>{{form.content()}}</div>
-    <div>{{form.submit()}}</div>
+    <div>{{form.submit(class='btn btn-default')}}</div>
 </form>
 
 

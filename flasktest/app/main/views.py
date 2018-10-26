@@ -149,20 +149,30 @@ def upload_file():
 
 # 富文本编辑器tinymce测试页面
 @main.route('/ckeditortest',methods=['GET','POST'])
+@login_required
 def ckeditor_test():
     form = CkeditorForm()
-    if form.validate_on_submit():
-        content = Article(content=form.content.data)
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
+        content = Article(title=form.title.data,content=form.content.data,
+            author=current_user._get_current_object())
         db.session.add(content)
         db.session.commit()
-        return redirect(url_for('main.ckeditor_show'))
+        return redirect(url_for('main.article_list'))
     return render_template('ckeditor_test.html',form=form)
 
-# 富文本编辑器测试显示页面
-@main.route('/ckeditorshow/')
-def ckeditor_show():
-    content = Article.query.all()
-    return render_template('ckeditor_show.html',content = content)
+# 文章列表显示页面
+@main.route('/articlelist/')
+def article_list():
+    content = Article.query.order_by(Article.timestamp.desc()).all()
+    return render_template('article_list.html',content = content)
+# 文章显示页面
+@main.route('/articleshow/<int:id>')
+def article_show(id):
+    article = Article.query.get(id)
+    if article is None:
+        abort(404)
+    return render_template('article_show.html',article=article)
+
 
 # 用来处理富文本上传图片
 @main.route('/tinymceupload',methods=['POST','OPTIONS'])
