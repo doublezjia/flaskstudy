@@ -152,6 +152,8 @@ def upload_file():
 @login_required
 def ckeditor_test():
     form = CkeditorForm()
+    # 判断登录用户是否有写的权限
+    # 因为要获取一个真正的用户对象所以要用_get_current_object
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
         content = Article(title=form.title.data,content=form.content.data,
             author=current_user._get_current_object())
