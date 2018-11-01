@@ -1,0 +1,7 @@
+<div class="page-header">
+    <ul>
+    {% for post in posts %}
+    <li class="list-unstyled"><a href="{{url_for('main.article_show',id=post.id)}}">{{post.title}}</a></li>
+    {% endfor%}
+    </ul>
+</div>

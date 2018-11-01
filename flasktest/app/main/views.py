@@ -44,25 +44,6 @@ def for_moderators_only():
 
 @main.route('/',methods = ['GET','POST'])
 def index():
-    form = Nameform()
-    session['user'] = form.user.data
-    if form.validate_on_submit():
-        session['user'] = form.user.data
-        # 添加到数据库
-        user = User.query.filter_by(username=form.user.data).first()
-        if user is None:
-            user = User(username=form.user.data,email = form.email.data,password=form.pwd.data,datetime=datetime.datetime.now())
-            db.session.add(user)
-            db.session.commit()   
-            flash('add a user')
-        else :
-            pass
-            # if user.check_password(form.pwd.data) is True:
-            #     flash('password is right')
-            # else:
-            #     flash('passowrd is wrong')
-        # 重定向到页面,这里要注意要用main.index或者.index
-        return redirect(url_for('.index'))
     return render_template('index.html',user=session.get('user'))
 
 # 用户页面
@@ -163,10 +144,22 @@ def ckeditor_test():
     return render_template('ckeditor_test.html',form=form)
 
 # 文章列表显示页面
-@main.route('/articlelist/')
+@main.route('/articlelist/',methods=['GET','POST'])
 def article_list():
-    content = Article.query.order_by(Article.timestamp.desc()).all()
-    return render_template('article_list.html',content = content)
+    # 分页
+    # 页数请求从request.args.get获得，默认为第一页，int型
+    page = request.args.get('page',1,type=int)
+    # 通过paginate来显示某一页的记录
+    # 参数说明：
+    # page为页数,从上面的request.args.get获得
+    # per_page为每页显示的记录数
+    # error_out设置为True时，超出请求页数范围返回的是404错误，设置为False时返回的时候空列表
+    pagination = Article.query.order_by(Article.timestamp.desc()).paginate(page,
+        per_page=10,error_out=False)
+    # 每一页的记录
+    posts = pagination.items
+    return render_template('article_list.html',posts = posts,
+        pagination=pagination)
 # 文章显示页面
 @main.route('/articleshow/<int:id>')
 def article_show(id):

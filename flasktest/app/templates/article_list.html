@@ -1,15 +1,20 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-
+<!-- 引入宏分页宏页面 -->
+{% import "_macros.html" as macros %}
 {% block title %}Flasky{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-    <ul>
-    {% for c in content %}
-    <li class="list-unstyled"><a href="{{url_for('main.article_show',id=c.id)}}">{{c.title}}</a></li>
-    {% endfor%}
 
-    </ul>
+{% include '_article.html' %}
+
+<!--
+macros.pagination_widget(pagination,'main.article_list') 引用页面
+pagination为传递过来的值
+main.article_list为路由
+  -->
+<div class="pagination">
+    {{ macros.pagination_widget(pagination,'main.article_list')}}
 </div>
+
 {% endblock %}

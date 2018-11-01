@@ -267,7 +267,6 @@ class User(UserMixin,db.Model):
             hash=hash,size=size,default=default,rating=rating)
 
 
-
     # 检查用户是否有权限操作，如果有权限则返回True
     def can(self, perm):
         return self.role is not None and self.role.has_permission(perm)
@@ -304,3 +303,11 @@ class Article(db.Model):
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
     author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+
+    def adddata(i=0):
+        while i < 200:
+            u = User.query.get(2)
+            art = Article(title='Hello,World',content='test',author=u)
+            db.session.add(art)
+            db.session.commit()
+            i=i+1
