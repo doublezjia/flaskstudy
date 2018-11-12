@@ -136,12 +136,29 @@ def ckeditor_test():
     # 判断登录用户是否有写的权限
     # 因为要获取一个真正的用户对象所以要用_get_current_object
     if current_user.can(Permission.WRITE) and form.validate_on_submit():
-        content = Article(title=form.title.data,content=form.content.data,
+        article = Article(title=form.title.data,content=form.content.data,
             author=current_user._get_current_object())
-        db.session.add(content)
+        db.session.add(article)
         db.session.commit()
         return redirect(url_for('main.article_list'))
     return render_template('ckeditor_test.html',form=form)
+
+# 修改文章
+@main.route('/ckeditoredit/<int:id>',methods=['GET','POST'])
+@login_required
+def ckeditor_edit(id):
+    form = CkeditorForm()
+    article = Article.query.get_or_404(id)
+    # 判断登录用户是否有写的权限和是否提交
+    if current_user.can(Permission.WRITE) and form.validate_on_submit():
+        article.title = form.title.data
+        article.content = form.content.data
+        return redirect(url_for('main.ckeditor_edit',id=id))
+    # 表单显示内容
+    form.title.data = article.title
+    form.content.data = article.content
+    return render_template('ckeditor_edit.html',form=form)
+
 
 # 文章列表显示页面
 @main.route('/articlelist/',methods=['GET','POST'])
@@ -149,14 +166,14 @@ def article_list():
     # 分页
     # 页数请求从request.args.get获得，默认为第一页，int型
     page = request.args.get('page',1,type=int)
-    # 通过paginate来显示某一页的记录
+    # 通过paginate对象来获取记录
     # 参数说明：
     # page为页数,从上面的request.args.get获得
     # per_page为每页显示的记录数
     # error_out设置为True时，超出请求页数范围返回的是404错误，设置为False时返回的时候空列表
     pagination = Article.query.order_by(Article.timestamp.desc()).paginate(page,
         per_page=10,error_out=False)
-    # 每一页的记录
+    # 当前页的记录
     posts = pagination.items
     return render_template('article_list.html',posts = posts,
         pagination=pagination)
