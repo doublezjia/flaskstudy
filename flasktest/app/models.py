@@ -147,6 +147,23 @@ class User(UserMixin,db.Model):
     # 本地上传图片
     imagesrc = db.Column(db.String(255))
 
+    # 参数说明：
+    # 因为followed和followers都是单独的一对多关系,为了消除外键间的歧义，所以必须使用foreign_keys指定外键。
+    # db.backref不是指定两个关系之间的引用关系，而是回引Follow模型，里面的lazy设置joined可以一次性的从数据库中完成数据查询结果，不用每次都提交查询。
+    # lazy设置为dynamic 是返回查询对象，而不是直接返回记录。
+    # cascade参数配置在父对象上执行的操作对相关对象的影响。其值是一组由逗号分隔的层叠选项。
+    #   all 是所有层叠选项，delete-orphan是在删除记录的同时把该记录所指向的记录实体也删除。
+    #   all,delete-orphan 表示是启用所有默认层叠选项，而且还要删除孤儿记录。
+    followed = db.relationship('Follow',
+                                foreign_keys=[Follow.follower_id],
+                                backref=db.backref('follower',lazy='joined'),
+                                lazy = 'dynamic',
+                                cascade='all,delete-orphan')
+    followers = db.relationship('Follow',
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed',lazy='joined'),
+                                lazy = 'dynamic',
+                                cascade='all,delete-orphan')    
 
     def __init__(self, **kwargs):
         # 继承父类
@@ -296,6 +313,15 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+
+# 关联表
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer,db.ForeignKey('users.id'),primary_key=True)
+    followed_id = db.Column(db.Integer,db.ForeignKey('users.id'),primary_key=True)
+    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
+
+# 文章
 class Article(db.Model):
     __tablename__ = 'article'
     id = db.Column(db.Integer, primary_key=True)
