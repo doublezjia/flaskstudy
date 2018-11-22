@@ -31,6 +31,14 @@ class Permission:
     ADMIN = 16
 
 
+# 关联表
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer,db.ForeignKey('users.id'),primary_key=True)
+    followed_id = db.Column(db.Integer,db.ForeignKey('users.id'),primary_key=True)
+    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
+
+
 class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
@@ -147,6 +155,7 @@ class User(UserMixin,db.Model):
     # 本地上传图片
     imagesrc = db.Column(db.String(255))
 
+    # 关注和被关注功能
     # 参数说明：
     # 因为followed和followers都是单独的一对多关系,为了消除外键间的歧义，所以必须使用foreign_keys指定外键。
     # db.backref不是指定两个关系之间的引用关系，而是回引Follow模型，里面的lazy设置joined可以一次性的从数据库中完成数据查询结果，不用每次都提交查询。
@@ -282,7 +291,28 @@ class User(UserMixin,db.Model):
 
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url,
             hash=hash,size=size,default=default,rating=rating)
-
+    # 关注
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+    # 取消关注
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+    # 判断是否关注该用户
+    def is_following(self, user):
+        if user.id is None:
+            return False
+        return self.followed.filter_by(
+            followed_id=user.id).first() is not None
+    # 判断该用户是否关注了我
+    def is_followed_by(self, user):
+        if user.id is None:
+            return False
+        return self.followers.filter_by(
+            follower_id=user.id).first() is not None
 
     # 检查用户是否有权限操作，如果有权限则返回True
     def can(self, perm):
@@ -312,14 +342,6 @@ login_manager.anonymous_user = AnonymousUser
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
-
-# 关联表
-class Follow(db.Model):
-    __tablename__ = 'follows'
-    follower_id = db.Column(db.Integer,db.ForeignKey('users.id'),primary_key=True)
-    followed_id = db.Column(db.Integer,db.ForeignKey('users.id'),primary_key=True)
-    timestamp = db.Column(db.DateTime,default=datetime.utcnow)
 
 # 文章
 class Article(db.Model):

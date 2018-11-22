@@ -205,3 +205,74 @@ def tinymceUpload():
         img_json = json.dumps(imgdict)
         session['imgsrc'] = imgsrc
         return img_json
+
+# 关注
+@main.route('/follow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def follow(username):
+    user = User.query.filter_by(username=username).first()
+    # 如果没有这个用户就跳转到首页
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('main.index'))
+    # 如果已经关注了就跳到用户页
+    if current_user.is_following(user):
+        flash('You are already following this user.')
+        return redirect(url_for('main.user',username=username))
+    current_user.follow(user)
+    db.session.commit()
+    flash('You are now following %s' % username)
+    return redirect(url_for('main.user',username=username))
+
+# 取消关注
+@main.route('/unfollow/<username>')
+@login_required
+@permission_required(Permission.FOLLOW)
+def unfollow(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('main.index'))
+    # 如果没有关注就跳到用户页
+    if not current_user.is_following(user):
+        flash('You are not following this user.')
+        return redirect(url_for('main.user',username=username))
+    current_user.unfollow(user)
+    db.session.commit()
+    flash('You are not following %s anymore.' % username)
+    return redirect(url_for('main.user',username=username))
+
+# 关注人页面
+@main.route('/followers/<username>')
+def followers(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followers.paginate(
+        page, per_page=10,
+        error_out=False)
+    follows = [{'user': item.follower, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followers of",
+                           endpoint='.followers', pagination=pagination,
+                           follows=follows)
+
+# 被关注人页面
+@main.route('/followed_by/<username>')
+def followed_by(username):
+    user = User.query.filter_by(username=username).first()
+    if user is None:
+        flash('Invalid user.')
+        return redirect(url_for('.index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = user.followed.paginate(
+        page, per_page=10,
+        error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp}
+               for item in pagination.items]
+    return render_template('followers.html', user=user, title="Followed by",
+                           endpoint='.followed_by', pagination=pagination,
+                           follows=follows)
