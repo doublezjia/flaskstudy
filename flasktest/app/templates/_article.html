@@ -1,8 +1,9 @@
 <div class="page-header">
-    <ul>
+    <ul class="list-group">
     {% for post in posts %}
-    <li class="list-unstyled">
-        <a href="{{url_for('main.article_show',id=post.id)}}">{{post.title}}</a> {% if current_user.is_administrator() %}
+    <li class="list-group-item">
+        <a href="{{url_for('main.article_show',id=post.id)}}">{{post.title}}-----{{post.author.username}}</a> 
+        {% if current_user.is_administrator() or post.author == current_user %}
              <a class="btn btn-default" href='{{url_for("main.ckeditor_edit",id=post.id)}}'>
                 Edit
             </a>       

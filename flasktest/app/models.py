@@ -314,6 +314,16 @@ class User(UserMixin,db.Model):
         return self.followers.filter_by(
             follower_id=user.id).first() is not None
 
+    # 获取关注的人的文章
+    # @property把方法转为属性
+    # join连接Follow表和Aritcle表，然后查询。
+    # 通过在Follow表中获取关注的用户的ID，然后根据获取到的用户ID在Article中进行查找
+    @property
+    def followed_posts(self):
+        return Article.query.join(Follow,Follow.followed_id == Article.author_id)\
+        .filter(Follow.follower_id == self.id)
+    
+
     # 检查用户是否有权限操作，如果有权限则返回True
     def can(self, perm):
         return self.role is not None and self.role.has_permission(perm)

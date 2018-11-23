@@ -44,6 +44,14 @@ def for_moderators_only():
 
 @main.route('/',methods = ['GET','POST'])
 def index():
+    if current_user.is_authenticated:
+        page = request.args.get('page', 1, type=int)
+        query = current_user.followed_posts
+        pagination = query.order_by(Article.timestamp.desc()).paginate(page,
+                        per_page=10,error_out=False) 
+        posts = pagination.items    
+        return render_template('index.html',user=session.get('user'),
+            posts=posts,pagination=pagination,)  
     return render_template('index.html',user=session.get('user'))
 
 # 用户页面
