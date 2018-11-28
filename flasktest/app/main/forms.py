@@ -68,3 +68,8 @@ class CkeditorForm(FlaskForm):
     title = StringField('标题',validators=[Required()])
     content = TextAreaField('正文')
     submit = SubmitField('Submit')
+
+class CommentForm(FlaskForm):
+    content = TextAreaField('评论',validators=[Required()])
+    submit = SubmitField('Submit')
+

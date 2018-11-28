@@ -151,7 +151,8 @@ class User(UserMixin,db.Model):
     last_seen = db.Column(db.DateTime(),default=datetime.utcnow)
     # db.relationship与Article建立反向关系,backref='author'的值为自定义
     article = db.relationship('Article',backref='author',lazy='dynamic')
-
+    # 评论
+    comments = db.relationship('Comment',backref='author',lazy='dynamic')
     # 本地上传图片
     imagesrc = db.Column(db.String(255))
 
@@ -361,7 +362,7 @@ class Article(db.Model):
     content = db.Column(db.Text)
     timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
     author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
-
+    comments = db.relationship('Comment',backref='article',lazy='dynamic')
     def adddata(i=0):
         while i < 200:
             u = User.query.get(2)
@@ -369,3 +370,27 @@ class Article(db.Model):
             db.session.add(art)
             db.session.commit()
             i=i+1
+
+# 评论
+class Comment(db.Model):
+    __tablename__ = 'comments'
+    id = db.Column(db.Integer, primary_key=True)
+    content = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
+    author_id = db.Column(db.Integer,db.ForeignKey('users.id'))
+    article_id = db.Column(db.Integer,db.ForeignKey('article.id'))
+    disabled = db.Column(db.Boolean)
+
+    # 设置body为该类属性
+    @property
+    def body(self):
+        pass
+    # 设置body属性为可赋值的属性
+    # 替换换行符、特殊符号
+    @body.setter
+    def body(self,body):
+        body = body.replace('<','&lt;')
+        body = body.replace('>','&gt;')
+        body = body.replace('\n','</br>')
+        body = body.replace('\r','</br>')
+        self.content = body

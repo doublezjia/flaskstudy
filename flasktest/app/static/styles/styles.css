@@ -21,3 +21,33 @@
   color: #FF0000;
 }
 
+.comments{
+  margin:0;
+  padding:0;
+  list-style-type: none;
+}
+
+.comment{
+    display: block;
+    margin-top: 5px;
+    height: auto;
+    width: 100%;
+}
+.comment-thumbnail{
+  position: absolute;
+}
+.comment-content{
+  margin-left: 50px;
+  padding: 5px;
+  height: auto;
+  width: 80%;
+}
+.comment-author{
+
+}
+.comment-date{
+  float: right;
+}
+.comment-body{
+  margin-top: 10px;
+}

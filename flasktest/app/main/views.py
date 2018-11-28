@@ -12,7 +12,7 @@ from . import main
 from .forms import Nameform
 from .forms import EditProfileForm
 from .forms import EditProfileAdminForm
-from ..models import User,Role,Article
+from ..models import User,Role,Article,Comment
 from .. import db
 
 from flask_login import login_required
@@ -26,6 +26,7 @@ from ..decorators import admin_required
 from .. import photos 
 from .forms import FileUploadsForm
 from .forms import CkeditorForm
+from .forms import CommentForm 
 
 import json,hashlib,time,os
 # 管理员页面
@@ -185,13 +186,25 @@ def article_list():
     posts = pagination.items
     return render_template('article_list.html',posts = posts,
         pagination=pagination)
-# 文章显示页面
-@main.route('/articleshow/<int:id>')
+# 文章显示页面和评论
+@main.route('/articleshow/<int:id>',methods=['GET','POST'])
 def article_show(id):
-    article = Article.query.get(id)
-    if article is None:
-        abort(404)
-    return render_template('article_show.html',article=article)
+    article = Article.query.get_or_404(id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.content.data,
+            article=article,author=current_user._get_current_object())
+        db.session.add(comment)
+        db.session.commit()
+        return redirect(url_for('main.article_show',id=article.id,page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (article.comments.count() - 1) // 10 + 1
+    pagination = article.comments.order_by(Comment.timestamp.asc()).paginate(page,
+     per_page=10,error_out=False)
+    comments = pagination.items
+    return render_template('article_show.html',article=article,
+        pagination=pagination,comments=comments,form=form)
 
 
 # 用来处理富文本上传图片

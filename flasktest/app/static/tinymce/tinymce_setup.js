@@ -1,5 +1,6 @@
 tinymce.init({
-            selector: "textarea",
+            // selector: "textarea",
+            selector: "#tinymce",
             height: 400,
             language:'zh_CN',
             plugins: [
