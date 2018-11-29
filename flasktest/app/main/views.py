@@ -195,7 +195,9 @@ def article_show(id):
         db.session.commit()
         return redirect(url_for('main.article_show',id=article.id,page=-1))
     page = request.args.get('page', 1, type=int)
+    # 如果有新评论，page传过来的值为-1
     if page == -1:
+        # 获取最新评论所在页数
         page = (article.comments.count() - 1) // 10 + 1
     pagination = article.comments.order_by(Comment.timestamp.asc()).paginate(page,
      per_page=10,error_out=False)
