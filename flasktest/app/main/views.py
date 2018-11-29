@@ -44,15 +44,7 @@ def for_moderators_only():
     return 'For commit moderators!'
 
 @main.route('/',methods = ['GET','POST'])
-def index():
-    if current_user.is_authenticated:
-        page = request.args.get('page', 1, type=int)
-        query = current_user.followed_posts
-        pagination = query.order_by(Article.timestamp.desc()).paginate(page,
-                        per_page=10,error_out=False) 
-        posts = pagination.items    
-        return render_template('index.html',user=session.get('user'),
-            posts=posts,pagination=pagination,)  
+def index(): 
     return render_template('index.html',user=session.get('user'))
 
 # 用户页面
@@ -192,6 +184,11 @@ def article_show(id):
     article = Article.query.get_or_404(id)
     form = CommentForm()
     if form.validate_on_submit():
+        # 如果没登录就不能评论
+        if not current_user.is_authenticated:
+            flash('请登录再评论')
+            return redirect(url_for('main.article_show',id=article.id,page=-1))
+
         comment = Comment(body=form.content.data,
             article=article,author=current_user._get_current_object())
         db.session.add(comment)
