@@ -43,11 +43,10 @@
   width: 80%;
 }
 .comment-author{
-
 }
 .comment-date{
   float: right;
 }
 .comment-body{
-  margin-top: 10px;
+  padding-left: 50px;
 }
